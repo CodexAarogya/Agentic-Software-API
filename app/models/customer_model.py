@@ -1,9 +1,9 @@
-from app.db.base import Base
+from app.database.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, ForeignKey, Numeric
 
 class Customer(Base):
-    __tablename__="customers"
+    __tablename__= "customers"
 
     customerNumber: Mapped[int] = mapped_column(String(50),primary_key=True)
     customerName: Mapped[str] = mapped_column(String(50), nullable=False)

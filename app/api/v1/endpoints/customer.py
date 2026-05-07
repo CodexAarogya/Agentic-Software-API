@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Depends
 from app.models.customer_model import Customer
+from app.schemas.customer import PaginatedCustomers
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from app.db.session import get_db_connection
-
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.core.config import settings
-from dotenv import load_dotenv
+from sqlalchemy import select, func
+from app.database.session import get_db_connection
+from app.utils.paginationType import PaginationType
 
 router = APIRouter(
     prefix="/customers",
@@ -14,32 +12,29 @@ router = APIRouter(
 )
 
 
-load_env = load_dotenv()
+@router.get("/", response_model=PaginatedCustomers)
+async def fetch_customers(
+    pagination: PaginationType,
+    db: AsyncSession = Depends(get_db_connection),
+    ):
 
-engine = create_async_engine(
-    url= settings.DATABASE_URL,
-    echo = True
-)
+    total_results = await db.execute(select(func.count()).select_from(Customer))
+    total_results = total_results.scalar()
 
-SessionLocal = async_sessionmaker(
-    bind=engine,
-    class_= AsyncSession
-)
+    results = await db.execute(
+        select(Customer)
+        .offset(pagination.offset)
+        .limit(pagination.page_size)
+    )
 
-# async def get_cus():
-#     return({"customer": "hello"})
+    customers = results.scalars().all()
+    print(customers)
 
-@router.get("/")
-async def fetch_all_customers(db: AsyncSession = Depends(get_db_connection)):
-    result = await db.execute(select(Customer))
-    customer = result.scalars().all()
-    return({
-        "Customers": [
-            {
-                "id": c.id
-            }
-            for c in customer
-        ]
-    })
+    return PaginatedCustomers(
+        total=total_results,
+        page=pagination.page,
+        page_size=pagination.page_size,
+        data=customers
+    )
 
 
