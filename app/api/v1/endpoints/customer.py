@@ -26,9 +26,8 @@ async def fetch_customers(
         .offset(pagination.offset)
         .limit(pagination.page_size)
     )
-
+    
     customers = results.scalars().all()
-    print(customers)
 
     return PaginatedCustomers(
         total=total_results,
