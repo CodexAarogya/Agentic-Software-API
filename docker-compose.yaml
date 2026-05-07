@@ -11,6 +11,16 @@ services:
     volumes:
       # - postgres_data: /var/lib/postgresql/data
       - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql
+
+  backend:
+    build: .
+    container_name: fastapi_backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+    
   
   # volumes:
   #   postgres_data: 
