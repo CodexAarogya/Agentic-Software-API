@@ -25,3 +25,20 @@ class PaginatedCustomers(BaseModel):
     page: int
     page_size: int 
     data: list[customer_serializer]
+
+class updateCustomer(BaseModel):
+    
+    customerName: Optional[str] = None
+    contactLastName: Optional[str] = None
+    contactFirstName: Optional[str] = None
+    phone: Optional[str] = None
+    addressLine1: Optional[str] = None
+    addressLine2: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    postalCode: Optional[str] = None
+    country: Optional[str] = None
+    salesRepEmployeeNumber: Optional[int] = None
+    creditLimit: Optional[float] = None
+
+    model_config = {"from_attributes": True}

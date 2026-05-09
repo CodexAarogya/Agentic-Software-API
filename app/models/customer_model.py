@@ -5,7 +5,7 @@ from sqlalchemy import String, ForeignKey, Numeric
 class Customer(Base):
     __tablename__= "customers"
 
-    customerNumber: Mapped[int] = mapped_column(String(50),primary_key=True)
+    customerNumber: Mapped[int] = mapped_column(primary_key=True)
     customerName: Mapped[str] = mapped_column(String(50), nullable=False)
     contactLastName: Mapped[str] = mapped_column(String(50), nullable=False)
     contactFirstName: Mapped[str] = mapped_column(String(50), nullable=False)
