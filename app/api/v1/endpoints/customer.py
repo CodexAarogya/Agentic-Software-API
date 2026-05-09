@@ -103,7 +103,35 @@ async def patch_customer_by_customerNumber(customerData: updateCustomer,
     
     else:
         update_data = customerData.model_dump(exclude_unset=True)
-        print(update_data)
+
+        for key, value in update_data.items():
+            setattr(customer, key, value)
+
+        await db.commit()
+        await db.refresh(customer)
+
+        return ({"Message": "Customer data updated successfully!"})
+    
+
+
+@router.put("/customer/{customerNumber}")
+async def put_customer_by_customerNumber(customerData: customer_serializer,
+                                            customerNumber: int = Path(ge=1),
+                                            db: AsyncSession = Depends(get_db_connection),
+                                      ):
+                                      
+
+    result = await db.execute(
+        select(Customer)
+        .where(Customer.customerNumber == customerNumber)
+    )
+
+    customer = result.scalar_one_or_none()
+    if customer is None:
+        raise HTTPException(status_code=404, detail="Customer not found!")
+    
+    else:
+        update_data = customerData.model_dump(exclude_unset=False)
 
         for key, value in update_data.items():
             setattr(customer, key, value)
